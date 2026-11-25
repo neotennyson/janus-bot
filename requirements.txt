@@ -1,0 +1,8 @@
+pandas>=2.0
+numpy>=1.24
+yfinance>=0.2.40
+pyyaml>=6.0
+requests>=2.31
+fastapi>=0.110
+uvicorn>=0.27
+playwright>=1.44   # optional: needed only for the univest.in web connector

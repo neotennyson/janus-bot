@@ -1,0 +1,73 @@
+# JANUS — mirrors UNIVEST trade ideas with an independent decision gate.
+# Copy to config.yaml and fill env vars in your shell.
+
+mode: shadow            # shadow (log only) | paper (simulate fills) | live (real orders)
+
+capital: 500000.0       # rupee book used for risk-based sizing
+
+segments: [FUTURES, OPTIONS, COMMODITY]   # no EQUITY (decided)
+
+risk:
+  per_trade_pct: 0.005        # 0.5% of capital risked per trade
+  max_open_positions: 6
+  max_positions_per_underlying: 1
+  daily_loss_limit_pct: 0.02
+  max_drawdown_pct: 0.20
+  no_averaging_down: true
+
+gate:
+  min_score: 0.55             # below this -> DO NOT TRADE
+  min_rr: 1.5                 # reward:risk floor
+  max_sl_atr: 1.5             # reject if stop is wider than 1.5x ATR
+  min_adx: 20                 # chop filter
+  max_chase_pct: 0.003        # never pay more than entry * 1.003
+  deep_discount_pct: 0.03     # ignore if price is >3% below signal entry (missed)
+  block_event_days: true
+  block_expiry_day: false
+  entry_validity_minutes:
+    INTRADAY: 45
+    SWING: 1440
+    POSITIONAL: 4320
+    WEEKLY: 2880
+
+exit:
+  breakeven_at_r: 1.0
+  partial_at_r: 1.0
+  partial_fraction: 0.5
+  trail_atr_mult: 2.0
+  max_hold_after_exit_signal_hours: 48
+  square_off_intraday: true
+  never_widen_stop: true
+
+data:
+  provider: yfinance          # yfinance | dhan
+  cache_dir: data/cache
+  lookback_days: 400
+
+broker:
+  name: dhan
+  client_id: "${DHAN_CLIENT_ID}"
+  access_token: "${DHAN_ACCESS_TOKEN}"
+
+notify:
+  ntfy_topic: "${NTFY_TOPIC}"
+
+webhook:
+  host: 127.0.0.1
+  port: 8787
+  secret: "${JANUS_WEBHOOK_SECRET}"
+
+store:
+  path: data/janus.db
+
+kill_switch_path: data/KILL
+
+sources:
+  web:
+    enabled: true
+    base_url: https://univest.in
+    ideas_path: /intraday-stocks-for-today
+    state_path: data/univest_state.json
+    captured_dir: data/captured
+    api_hint: ""
+    poll_interval_seconds: 20

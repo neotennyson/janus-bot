@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+secrets*.json
+logs/
+data/
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
+univest_state.json
